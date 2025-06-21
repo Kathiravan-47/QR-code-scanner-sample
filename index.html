@@ -2,34 +2,63 @@
 <html>
 <head>
   <title>Secure QR Viewer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f9f9f9;
       user-select: none;
     }
-    #result {
-      pointer-events: none;
-      font-size: 18px;
-      border: 1px solid #ccc;
-      padding: 10px;
+    #reader {
+      width: 100%;
       max-width: 400px;
+      margin: auto;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+      text-align: center;
+      word-break: break-word;
+      pointer-events: none;
+    }
+    a#link {
+      display: block;
       margin-top: 10px;
+      text-align: center;
+      font-size: 18px;
+      color: blue;
+      text-decoration: underline;
+      pointer-events: auto;
     }
   </style>
 </head>
 <body>
-  <h2>Scan QR Code</h2>
-  <div id="reader" style="width:300px;"></div>
+  <h2 style="text-align:center;">Scan QR Code</h2>
+  <div id="reader"></div>
   <div id="result">Scanned info will appear here</div>
+  <a id="link" href="#" target="_blank" style="display:none;">Open Link</a>
 
   <script>
     const resultDiv = document.getElementById('result');
+    const linkEl = document.getElementById('link');
+
     const qr = new Html5Qrcode("reader");
     qr.start(
       { facingMode: "environment" },
       { fps: 10, qrbox: 250 },
       (decodedText) => {
-        resultDiv.innerText = decodedText;
+        resultDiv.textContent = decodedText;
+
+        // Check if it's a valid URL
+        if (/^(http|https):\/\/[^ "]+$/.test(decodedText)) {
+          linkEl.href = decodedText;
+          linkEl.style.display = 'block';
+        } else {
+          linkEl.style.display = 'none';
+        }
       },
       (error) => {}
     );
